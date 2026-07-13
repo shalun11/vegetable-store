@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header/Header';
 import { ProductList } from './components/ProductList/ProductList';
-import { Cart } from './components/Cart/Cart';
 import { Loader } from './components/Loader/Loader';
 import { fetchProducts } from './api/products';
 import type { Product, CartItem } from './types';
@@ -11,7 +10,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [cartOpened, setCartOpened] = useState(false);
 
   useEffect(() => {
     fetchProducts()
@@ -68,7 +66,6 @@ function App() {
   };
 
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartTotalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   if (loading) {
     return <Loader />;
@@ -79,8 +76,9 @@ function App() {
       <div style={{ position: 'sticky', top: 0, zIndex: 100 }}>
         <Header
           cartItemsCount={cartItemsCount}
-          cartTotalPrice={cartTotalPrice}
-          onCartClick={() => setCartOpened(true)}
+          cartItems={cart}
+          onRemoveItem={handleRemoveFromCart}
+          onQuantityChange={handleCartQuantityChange}
         />
       </div>
 
@@ -89,14 +87,6 @@ function App() {
         quantities={quantities}
         onAddToCart={handleAddToCart}
         onQuantityChange={handleQuantityChange}
-      />
-
-      <Cart
-        opened={cartOpened}
-        onClose={() => setCartOpened(false)}
-        items={cart}
-        onRemoveItem={handleRemoveFromCart}
-        onQuantityChange={handleCartQuantityChange}
       />
     </>
   );

@@ -1,12 +1,22 @@
-import { Group, Text, Badge, Button } from '@mantine/core';
+import { useState } from 'react';
+import { Group, Text, Badge, Button, Popover } from '@mantine/core';
+import { Cart } from '../Cart/Cart';
 
 interface HeaderProps {
   cartItemsCount: number;
-  cartTotalPrice: number;
-  onCartClick: () => void;
+  cartItems: any[];
+  onRemoveItem: (productId: number) => void;
+  onQuantityChange: (productId: number, quantity: number) => void;
 }
 
-export function Header({ cartItemsCount, cartTotalPrice, onCartClick }: HeaderProps) {
+export function Header({
+  cartItemsCount,
+  cartItems,
+  onRemoveItem,
+  onQuantityChange
+}: HeaderProps) {
+  const [opened, setOpened] = useState(false); // Добавляем состояние
+
   return (
     <Group justify="space-between" style={{ padding: '16px 24px', backgroundColor: '#2F9E44', color: 'white' }}>
       <Group>
@@ -14,16 +24,34 @@ export function Header({ cartItemsCount, cartTotalPrice, onCartClick }: HeaderPr
           Vegetable
         </Text>
         <Badge color="green" variant="light">
-          NEW
+          SHOP
         </Badge>
       </Group>
-      <Button
-        variant="white"
-        color="green"
-        onClick={onCartClick}
+
+      <Popover
+        position="bottom-end"
+        width={320}
+        opened={opened}
+        onChange={setOpened}
       >
-        Cart: {cartItemsCount} (${cartTotalPrice.toFixed(2)})
-      </Button>
+        <Popover.Target>
+          <Button
+            variant="white"
+            color="green"
+            onClick={() => setOpened(!opened)} // Добавляем обработчик
+          >
+            🛒 Cart: {cartItemsCount}
+          </Button>
+        </Popover.Target>
+
+        <Popover.Dropdown>
+          <Cart
+            items={cartItems}
+            onRemoveItem={onRemoveItem}
+            onQuantityChange={onQuantityChange}
+          />
+        </Popover.Dropdown>
+      </Popover>
     </Group>
   );
 }
