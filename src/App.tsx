@@ -59,8 +59,15 @@ function App() {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const handleCartQuantityChange = (productId: number, quantity: number) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
+  };
 
+  const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   if (loading) {
@@ -89,6 +96,7 @@ function App() {
         onClose={() => setCartOpened(false)}
         items={cart}
         onRemoveItem={handleRemoveFromCart}
+        onQuantityChange={handleCartQuantityChange}
       />
     </>
   );
